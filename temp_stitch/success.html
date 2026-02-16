@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Submission Accepted | The Sudoku Vault</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#00d4ff",
+                        "background-light": "#f5f8f8",
+                        "background-dark": "#0f2023",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .sudoku-grid {
+            display: grid;
+            grid-template-columns: repeat(9, 1fr);
+            gap: 1px;
+            background-color: #1e3a40;
+            border: 2px solid #00d4ff;
+        }
+        .sudoku-cell {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #0f2023;
+            font-size: 0.75rem;
+            color: #ffffff;
+        }
+        .sudoku-cell.filled {
+            color: #00d4ff;
+            font-weight: 700;
+        }
+        /* Confetti simulation with CSS backgrounds */
+        .confetti-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 400px;
+            pointer-events: none;
+            background-image: 
+                radial-gradient(circle, #00d4ff 1px, transparent 1px),
+                radial-gradient(circle, #ffffff 1.5px, transparent 1.5px),
+                radial-gradient(circle, #00d4ff 1px, transparent 1px);
+            background-size: 50px 50px, 80px 80px, 120px 120px;
+            background-position: 0 0, 40px 40px, 20px 60px;
+            opacity: 0.3;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white min-h-screen font-display">
+<div class="relative flex h-auto min-h-screen w-full flex-col bg-background-light dark:bg-background-dark overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<!-- Navigation -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-primary/20 px-6 py-4 md:px-10 lg:px-40">
+<div class="flex items-center gap-3 text-white">
+<div class="size-6 text-primary">
+<span class="material-symbols-outlined text-3xl">grid_view</span>
+</div>
+<h2 class="text-white text-lg font-bold leading-tight tracking-[-0.015em]">The Sudoku Vault</h2>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center justify-center rounded-lg h-10 w-10 bg-primary/10 text-primary hover:bg-primary/20 transition-colors">
+<span class="material-symbols-outlined text-xl">notifications</span>
+</button>
+<button class="flex items-center justify-center rounded-lg h-10 w-10 bg-primary/10 text-primary hover:bg-primary/20 transition-colors">
+<span class="material-symbols-outlined text-xl">account_circle</span>
+</button>
+</div>
+</header>
+<main class="flex flex-1 justify-center py-10 relative">
+<!-- Decorative Confetti Background -->
+<div class="confetti-overlay"></div>
+<div class="layout-content-container flex flex-col max-w-[800px] flex-1 px-6 md:px-0 z-10">
+<!-- Hero Section -->
+<div class="text-center space-y-4 mb-12">
+<h1 class="text-white tracking-tight text-4xl md:text-5xl font-extrabold leading-tight">CONTRIBUTION RECEIVED!</h1>
+<div class="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-2 shadow-[0_0_20px_rgba(0,212,255,0.4)]">
+<span class="text-background-dark text-sm md:text-base font-black tracking-widest">YOU ARE #418,392</span>
+</div>
+<p class="text-slate-400 text-lg max-w-lg mx-auto leading-relaxed pt-4">Your puzzle has been added to the collection. We're one step closer to finding the hint. <span class="text-primary font-bold">0.0001%</span> closer to the hint.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+<!-- Mini Grid Preview -->
+<div class="flex flex-col gap-4 p-6 rounded-xl bg-primary/5 border border-primary/20">
+<h3 class="text-white text-sm font-bold uppercase tracking-widest flex items-center gap-2"><span class="material-symbols-outlined text-primary text-lg">search</span> Mission Log</h3>
+<div class="sudoku-grid w-full max-w-[280px] mx-auto rounded overflow-hidden shadow-2xl">
+<!-- Row 1 -->
+<div class="sudoku-cell filled">5</div><div class="sudoku-cell"></div><div class="sudoku-cell"></div>
+<div class="sudoku-cell filled">8</div><div class="sudoku-cell filled">4</div><div class="sudoku-cell"></div>
+<div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell filled">9</div>
+<!-- Row 2 -->
+<div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell filled">1</div>
+<div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div>
+<div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div>
+<!-- Row 3 -->
+<div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div>
+<div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div>
+<div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div>
+<!-- Row 4 -->
+<div class="sudoku-cell"></div><div class="sudoku-cell filled">3</div><div class="sudoku-cell"></div>
+<div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div>
+<div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div>
+<!-- Row 5 -->
+<div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div>
+<div class="sudoku-cell"></div><div class="sudoku-cell filled">2</div><div class="sudoku-cell"></div>
+<div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div>
+<!-- Row 6 -->
+<div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div>
+<div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div>
+<div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div>
+<!-- Row 7 -->
+<div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div>
+<div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div>
+<div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div>
+<!-- Row 8 -->
+<div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div>
+<div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div>
+<div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div>
+<!-- Row 9 -->
+<div class="sudoku-cell filled">2</div><div class="sudoku-cell"></div><div class="sudoku-cell"></div>
+<div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div>
+<div class="sudoku-cell filled">1</div><div class="sudoku-cell"></div><div class="sudoku-cell filled">4</div>
+</div>
+<p class="text-xs text-slate-500 text-center italic mt-2">Unique Hash: 418392-ABCD-XV92</p>
+</div>
+<!-- Share & Info -->
+<div class="flex flex-col gap-6">
+<div class="space-y-4">
+<h3 class="text-white text-sm font-bold uppercase tracking-widest">Share Your Contribution</h3>
+<div class="flex gap-3">
+<button class="flex flex-1 items-center justify-center gap-2 rounded-lg h-12 bg-[#5865F2] text-white font-bold hover:brightness-110 transition-all">
+<span class="material-symbols-outlined">forum</span>
+                                        Discord
+                                    </button>
+<button class="flex flex-1 items-center justify-center gap-2 rounded-lg h-12 bg-black border border-slate-700 text-white font-bold hover:bg-slate-900 transition-all">
+<span class="material-symbols-outlined">share</span>
+                                        Twitter
+                                    </button>
+</div>
+<div class="relative">
+<input class="w-full bg-background-dark border border-primary/30 rounded-lg py-3 px-4 text-primary text-sm font-mono focus:ring-0" readonly="" type="text" value="sudokuvault.com/r/418392-ABCD"/>
+<button class="absolute right-2 top-1.5 p-1.5 text-primary hover:bg-primary/10 rounded">
+<span class="material-symbols-outlined">content_copy</span>
+</button>
+</div>
+</div>
+<!-- Progress Milestone -->
+<div class="bg-primary/5 p-5 rounded-xl border border-primary/20 space-y-3">
+<div class="flex justify-between items-end">
+<p class="text-white font-bold">Vault Progress</p>
+<p class="text-primary text-xs font-mono">0.0001% TO HINT</p>
+</div>
+<div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[0.01%] shadow-[0_0_8px_#00d4ff]"></div>
+</div>
+<p class="text-slate-400 text-sm leading-snug">
+                                    The next milestone is <span class="text-white font-bold">500,000</span>. Stay tuned for the vault update.
+                                </p>
+</div>
+</div>
+</div>
+<!-- Footer Action -->
+<div class="mt-12 flex justify-center pb-10">
+<button class="group flex items-center justify-center gap-3 rounded-full h-14 px-10 bg-primary text-background-dark font-extrabold text-lg hover:scale-105 hover:shadow-[0_0_30px_rgba(0,212,255,0.6)] transition-all"><span class="material-symbols-outlined font-bold group-hover:scale-110 transition-transform">search</span> KEEP HUNTING</button>
+</div>
+</div>
+</main>
+<!-- Decorative Elements -->
+<div class="fixed bottom-0 left-0 p-10 opacity-20 pointer-events-none">
+<span class="material-symbols-outlined text-[120px] text-primary">encrypted</span>
+</div>
+<div class="fixed top-20 right-0 p-10 opacity-10 pointer-events-none">
+<span class="material-symbols-outlined text-[160px] text-primary">data_object</span>
+</div>
+</div>
+</div>
+</body></html>
