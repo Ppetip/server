@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getDB, saveDB, Submission } from '@/lib/db';
+import { addSubmission, hasIpSubmitted, type Submission } from '@/lib/db';
 import { normalizeGrid, formatHash } from '@/lib/sudoku';
 import crypto from 'crypto';
 
