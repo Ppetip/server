@@ -4,13 +4,12 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-// Fail-safe check to prevent build-time crashes
-if (!supabaseUrl || !supabaseKey) {
-    console.warn("Supabase credentials missing. This is expected during some build phases but will fail at runtime.");
-}
+// Only create clients if we have a URL, otherwise export a proxy or null 
+// to prevent the SDK from throwing "URL is required" during the Vercel build.
+export const supabase = supabaseUrl 
+    ? createClient(supabaseUrl, supabaseKey!) 
+    : (null as any);
 
-// Client for public access (Anon)
-export const supabase = createClient(supabaseUrl || '', supabaseKey || '');
-
-// Client for admin access (Service Role)
-export const supabaseAdmin = createClient(supabaseUrl || '', supabaseServiceKey || '');
+export const supabaseAdmin = supabaseUrl 
+    ? createClient(supabaseUrl, supabaseServiceKey!) 
+    : (null as any);
