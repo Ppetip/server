@@ -1,52 +1,32 @@
 import { NextResponse } from 'next/server';
-import { addSubmission, hasIpSubmitted, type Submission } from '@/lib/db';
-import { normalizeGrid, formatHash } from '@/lib/sudoku';
-import crypto from 'crypto';
-//hi
-export async function POST(req: Request) {
+import { getStats, getAdminConfig, type Submission } from '@/lib/db';
+
+export const dynamic = 'force-dynamic';
+
+export async function GET() {
     try {
-        const body = await req.json();
-        const { grid } = body;
+        // Fetching data from Supabase via your db utilities
+        const stats = await getStats();
+        const config = await getAdminConfig();
 
-        if (!grid || !Array.isArray(grid) || grid.length !== 81) {
-            return NextResponse.json({ error: "Invalid grid format" }, { status: 400 });
-        }
-
-        const gridString = normalizeGrid(grid);
-
-        // Server-side SHA-256 (Node crypto)
-        const hash = crypto.createHash('sha256').update(gridString).digest('hex').toUpperCase();
-
-        // 1. Check if it already exists (Note the 'await')
-        const alreadyExists = await hasIpSubmitted(hash);
-
-        if (alreadyExists) {
-            return NextResponse.json({
-                error: "Duplicate! This exact puzzle was already found in the vault.",
-            }, { status: 409 });
-        }
-
-        // 2. Prepare the submission object for Supabase
-        const submissionData: Submission = {
-            grid: gridString,
-            hash: hash,
-            original_name: "Sudoku Submission"
-        };
-
-        // 3. Save to Supabase (Note the 'await')
-        const savedRecord = await addSubmission(submissionData, hash);
-
-        // 4. Return Success using the 'id' returned by Supabase
-        const formattedHash = formatHash(savedRecord.id, hash);
-        
         return NextResponse.json({
-            success: true,
-            id: savedRecord.id,
-            hash: formattedHash
+            count: stats.count,
+            donationGoal: config.donationGoal,
+            donationCurrent: config.donationCurrent,
+            donationLink: config.donationLink,
+            // (s: Submission) provides the type safety required by Next.js build workers
+            recent: stats.recent.map((s: Submission) => ({
+                id: s.id,
+                // Using optional chaining to prevent crashes if hash is missing
+                hash: s.hash ? s.hash.substring(0, 8) + "..." : "Unknown",
+                time: s.createdAt
+            }))
         });
-
     } catch (error) {
-        console.error("Submit error:", error);
-        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+        console.error("Stats API Error:", error);
+        return NextResponse.json(
+            { error: "Failed to fetch stats from database" }, 
+            { status: 500 }
+        );
     }
 }
