@@ -13,7 +13,7 @@ export async function GET() {
             donationGoal: config.donationGoal,
             donationCurrent: config.donationCurrent,
             donationLink: config.donationLink,
-            // (s: Submission) fixes the "implicit any" build error
+            // Explicitly typing (s: Submission) resolves the "implicit any" error
             recent: stats.recent.map((s: Submission) => ({
                 id: s.id,
                 hash: s.hash ? s.hash.substring(0, 8) + "..." : "Unknown",
