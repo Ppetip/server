@@ -5,7 +5,12 @@ import Link from "next/link";
 import ServerFundWidget from "@/components/ServerFundWidget";
 
 export default function Hero() {
-  const [count, setCount] = useState(0);
+  const [stats, setStats] = useState({
+    count: 0,
+    donationGoal: 20000,
+    donationCurrent: 0,
+    donationLink: "https://www.gofundme.com/f/help-keep-our-server-alive"
+  });
   const [hasSubmitted, setHasSubmitted] = useState(false);
   /* Admin Access Removed/Hidden */
   // const [showAdmin, setShowAdmin] = useState(false);
@@ -22,9 +27,15 @@ export default function Hero() {
       try {
         const res = await fetch("/api/stats");
         const data = await res.json();
-        if (data.count !== undefined) setCount(data.count);
+
+        setStats({
+          count: data.count || 0,
+          donationGoal: data.donationGoal || 20000,
+          donationCurrent: data.donationCurrent || 0,
+          donationLink: data.donationLink || "https://www.gofundme.com/f/help-keep-our-server-alive"
+        });
       } catch (e) {
-        console.error("Failed to fetch stats");
+        console.error("Failed to fetch stats", e);
       }
     };
     fetchStats();
@@ -33,6 +44,8 @@ export default function Hero() {
       clearInterval(interval);
     };
   }, []);
+
+  const progress = Math.min((stats.donationCurrent / stats.donationGoal) * 100, 100);
 
   return (
     <>
@@ -86,17 +99,17 @@ export default function Hero() {
             <div className="flex flex-col md:flex-row justify-between items-end mb-6 gap-4">
               <div className="text-left">
                 <p className="text-sm font-bold text-[#00d4ff] tracking-[0.3em] uppercase mb-2">Mission Progress</p>
-                <h3 className="text-4xl md:text-5xl font-black text-white">{count.toLocaleString()} <span className="text-slate-500 text-2xl">/ 1,000,000</span></h3>
+                <h3 className="text-4xl md:text-5xl font-black text-white">{stats.count.toLocaleString()} <span className="text-slate-500 text-2xl">/ 1,000,000</span></h3>
               </div>
               <div className="text-right">
-                <span className="text-5xl font-black text-[#00d4ff]">{((count / 1000000) * 100).toFixed(4)}%</span>
+                <span className="text-5xl font-black text-[#00d4ff]">{((stats.count / 1000000) * 100).toFixed(4)}%</span>
               </div>
             </div>
 
             <div className="w-full bg-white/5 h-8 rounded-full overflow-hidden p-1.5 border border-white/5">
               <div
                 className="h-full bg-gradient-to-r from-[#00d4ff]/60 to-[#00d4ff] rounded-full glow-primary transition-all duration-1000"
-                style={{ width: `${(count / 1000000) * 100}%` }}
+                style={{ width: `${(stats.count / 1000000) * 100}%` }}
               ></div>
             </div>
 
@@ -116,7 +129,7 @@ export default function Hero() {
                   <span className="material-symbols-outlined align-middle ml-2 group-hover:translate-x-1 transition-transform">arrow_forward</span>
                 </Link>
                 <p className="text-slate-500 text-sm font-bold uppercase tracking-widest">
-                  Submit once to secure your rank: <span className="text-white">#{count + 1}</span>
+                  Submit once to secure your rank: <span className="text-white">#{stats.count + 1}</span>
                 </p>
               </>
             ) : (
@@ -131,7 +144,11 @@ export default function Hero() {
           </div>
 
           <div className="mt-16">
-            <ServerFundWidget />
+            <ServerFundWidget
+              current={stats.donationCurrent}
+              goal={stats.donationGoal}
+              link={stats.donationLink}
+            />
           </div>
         </div>
       </section>

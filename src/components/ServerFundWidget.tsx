@@ -3,16 +3,20 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 
-export default function ServerFundWidget() {
+interface ServerFundWidgetProps {
+    current: number;
+    goal: number;
+    link: string;
+}
+
+export default function ServerFundWidget({ current = 0, goal = 20000, link = "https://ko-fi.com/sudokuserver" }: ServerFundWidgetProps) {
     const [progress, setProgress] = useState(0);
-    const goal = 20000;
-    const current = 0; // Mock current amount
 
     useEffect(() => {
         // Animate progress on mount
-        const timer = setTimeout(() => setProgress((current / goal) * 100), 500);
+        const timer = setTimeout(() => setProgress(Math.min((current / goal) * 100, 100)), 500);
         return () => clearTimeout(timer);
-    }, []);
+    }, [current, goal]);
 
     return (
         <div className="w-full max-w-sm mx-auto bg-[#1a2a2d] border border-white/10 rounded-xl p-6 relative overflow-hidden group hover:border-[#39FF14]/30 transition-colors">
@@ -42,7 +46,7 @@ export default function ServerFundWidget() {
                 </p>
 
                 <a
-                    href="https://ko-fi.com/sudokuserver"
+                    href={link}
                     target="_blank"
                     className="block w-full py-2 bg-white/5 hover:bg-[#39FF14] hover:text-[#0f2023] text-white text-center font-bold uppercase tracking-widest text-xs rounded-lg transition-all border border-white/10 hover:border-[#39FF14]"
                 >
