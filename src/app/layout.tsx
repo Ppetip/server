@@ -7,6 +7,11 @@ const inter = Inter({ subsets: ["latin"] });
 
 
 
+export const metadata: Metadata = {
+  title: "Secure Server Uplink",
+  description: "Encrypted transmission protocol for secure data upload.",
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -16,6 +21,7 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+        <link rel="icon" href="/app_logo.png" />
       </head>
       <body className={inter.className}>
         {children}

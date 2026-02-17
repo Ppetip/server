@@ -1,18 +1,31 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useDropzone } from "react-dropzone";
+import { supabase } from "@/lib/supabase";
 
 export default function SubmitPage() {
     const router = useRouter();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState("");
+    const [loading, setLoading] = useState(true);
 
     // PDF Upload State
     const [file, setFile] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+    useEffect(() => {
+        const checkAuth = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) {
+                router.push("/");
+            }
+            setLoading(false);
+        };
+        checkAuth();
+    }, [router]);
 
     const onDrop = useCallback((acceptedFiles: File[]) => {
         const selectedFile = acceptedFiles[0];
@@ -42,11 +55,21 @@ export default function SubmitPage() {
         setError("");
 
         try {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) {
+                setError("Authentication session expired. Please log in again.");
+                setIsSubmitting(false);
+                return;
+            }
+
             const formData = new FormData();
             formData.append("file", file);
 
             const res = await fetch("/api/upload", {
                 method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${session.access_token}`
+                },
                 body: formData,
             });
 
@@ -60,12 +83,14 @@ export default function SubmitPage() {
             // Mark as submitted locally
             localStorage.setItem("sudoku_submitted", "true");
 
-            router.push(`/receipt/${data.id}?file=${encodeURIComponent(data.file_path)}&hash=${data.hash}`);
+            router.push(`/receipt/${data.id}?file=${encodeURIComponent(data.file_path)}&hash=${data.hash || "secure"}`);
         } catch (err: any) {
             setError(err.message || "Upload failed.");
             setIsSubmitting(false);
         }
     };
+
+    if (loading) return <div className="min-h-screen bg-[#0f2023] flex items-center justify-center text-white">Initializing Secure Connection...</div>;
 
     return (
         <div className="min-h-screen bg-[#0f2023] text-white font-sans selection:bg-[#00d4ff] selection:text-[#0f2023]">

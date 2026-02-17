@@ -10,8 +10,9 @@ export interface Submission {
   grid?: string;
   file_path?: string;
   original_name?: string;
-  hash?: string | null;        // can be null/undefined depending on inserts + DB
-  createdAt?: string | null;   // stored as string (or null) in your current code
+  hash?: string | null;        // Keep for legacy/fallback
+  user_id?: string | null;     // NEW: Authenticated User ID
+  createdAt?: string | null;
 }
 
 export type StatsResult = {
@@ -20,13 +21,14 @@ export type StatsResult = {
 };
 
 // 1) Core Submission Functions
-export const addSubmission = async (submission: Submission, ipHash?: string) => {
+export const addSubmission = async (submission: Submission) => {
   const { data, error } = await supabaseAdmin
     .from("submissions")
     .insert({
       original_name: submission.original_name ?? null,
       file_path: submission.file_path ?? null,
-      hash: ipHash ?? null,
+      hash: submission.hash ?? null,
+      user_id: submission.user_id ?? null,
       metadata: {},
     })
     .select()
@@ -45,6 +47,16 @@ export const hasIpSubmitted = async (ipHash: string): Promise<boolean> => {
     .from("submissions")
     .select("*", { count: "exact", head: true })
     .eq("hash", ipHash);
+
+  if (error) return false;
+  return (count || 0) > 0;
+};
+
+export const hasUserSubmitted = async (userId: string): Promise<boolean> => {
+  const { count, error } = await supabaseAdmin
+    .from("submissions")
+    .select("*", { count: "exact", head: true })
+    .eq("user_id", userId);
 
   if (error) return false;
   return (count || 0) > 0;
@@ -82,9 +94,13 @@ export const getStats = async (): Promise<StatsResult> => {
     throw recentError;
   }
 
-  // Key: force recent to be a typed array so `.map(s => ...)` isn't implicit-any
+  // Apply Fibbing Offset
+  const config = await getAdminConfig();
+  const realCount = count || 0;
+  const fibbedCount = realCount + (config.countOffset || 0);
+
   return {
-    count: count || 0,
+    count: fibbedCount,
     recent: (recent ?? []) as Submission[],
   };
 };
@@ -95,6 +111,7 @@ export type AdminConfig = {
   donationCurrent: number;
   donationLink: string;
   adminIp?: string | null;
+  countOffset?: number; // NEW: Fibbing factor
 };
 
 export const getAdminConfig = async (): Promise<AdminConfig> => {
@@ -106,13 +123,15 @@ export const getAdminConfig = async (): Promise<AdminConfig> => {
 
   if (error) {
     // If the row doesn't exist yet, return defaults
-    return { donationGoal: 20000, donationCurrent: 0, donationLink: "" };
+    return { donationGoal: 20000, donationCurrent: 0, donationLink: "", countOffset: 0 };
   }
 
-  // Your table stores config inside `value`
-  if (data?.value) return data.value as AdminConfig;
+  const defaults = { donationGoal: 20000, donationCurrent: 0, donationLink: "", countOffset: 0 };
 
-  return { donationGoal: 20000, donationCurrent: 0, donationLink: "" };
+  // Merge with defaults to ensure new fields exist
+  if (data?.value) return { ...defaults, ...data.value } as AdminConfig;
+
+  return defaults;
 };
 
 export const updateAdminConfig = async (newConfig: Partial<AdminConfig>) => {
