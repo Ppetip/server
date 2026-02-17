@@ -8,8 +8,8 @@ const inter = Inter({ subsets: ["latin"] });
 
 
 export const metadata: Metadata = {
-  title: "Secure Server Uplink",
-  description: "Encrypted transmission protocol for secure data upload.",
+  title: "Sudoku Submission Site",
+  description: "Secure platform for global Sudoku puzzle collection and verification.",
 };
 
 export default function RootLayout({
@@ -21,7 +21,7 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
-        <link rel="icon" href="/app_logo.png" />
+        <link rel="icon" href="/icon.svg" type="image/svg+xml" />
       </head>
       <body className={inter.className}>
         {children}
