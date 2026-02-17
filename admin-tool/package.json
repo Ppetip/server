@@ -1,7 +1,7 @@
 {
   "name": "admin-tool",
   "version": "1.0.0",
-  "description": "Standalone Admin Tool for Secure Server Uplink",
+  "description": "Standalone Admin Tool for Sudoku Hunt",
   "main": "src/index.ts",
   "scripts": {
     "start": "ts-node src/index.ts",
