@@ -7,7 +7,8 @@ import ServerFundWidget from "@/components/ServerFundWidget";
 export default function Hero() {
   const [count, setCount] = useState(0);
   const [hasSubmitted, setHasSubmitted] = useState(false);
-  const [showAdmin, setShowAdmin] = useState(false);
+  /* Admin Access Removed/Hidden */
+  // const [showAdmin, setShowAdmin] = useState(false);
 
   useEffect(() => {
     // Check local submission status
@@ -15,20 +16,7 @@ export default function Hero() {
       setHasSubmitted(true);
     }
 
-    // Admin Keypress Listener
-    let keyPresses: number[] = [];
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "0") {
-        const now = Date.now();
-        keyPresses.push(now);
-        // Keep only presses within last 2 seconds
-        keyPresses = keyPresses.filter(t => now - t < 2000);
-        if (keyPresses.length >= 7) {
-          setShowAdmin(true);
-        }
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
+    // Admin Listener Removed
 
     const fetchStats = async () => {
       try {
@@ -43,7 +31,6 @@ export default function Hero() {
     const interval = setInterval(fetchStats, 5000);
     return () => {
       clearInterval(interval);
-      window.removeEventListener("keydown", handleKeyDown);
     };
   }, []);
 
@@ -60,11 +47,6 @@ export default function Hero() {
             </div>
 
             <div className="flex items-center gap-4">
-              {showAdmin && (
-                <Link href="/admin" className="text-red-500 hover:text-red-400 font-bold uppercase tracking-widest text-xs border border-red-500/20 px-3 py-1 rounded hover:bg-red-500/10 transition-colors animate-pulse">
-                  Admin Access
-                </Link>
-              )}
               {!hasSubmitted && (
                 <Link href="/submit" className="bg-[#00d4ff] hover:brightness-110 text-[#0f2023] px-6 py-2 rounded-lg font-bold text-sm transition-all uppercase tracking-wider hidden sm:block">
                   Submit

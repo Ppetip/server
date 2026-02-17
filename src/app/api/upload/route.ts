@@ -1,25 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
-import { addSubmission, hasUserSubmitted, hasFileSubmitted } from "@/lib/db";
+import { addSubmission, hasIpSubmitted, hasFileSubmitted } from "@/lib/db";
 import { supabaseAdmin } from "@/lib/supabase";
+import crypto from "crypto";
 import { v4 as uuidv4 } from "uuid";
+
+// Helper to get IP
+function getIp(req: NextRequest) {
+    const forwardedFor = req.headers.get("x-forwarded-for");
+    if (forwardedFor) {
+        return forwardedFor.split(",")[0].trim();
+    }
+    // Fallback for local dev if needed, or just return a default
+    return req.headers.get("x-real-ip") || "127.0.0.1";
+}
 
 export async function POST(req: NextRequest) {
     try {
-        // 1. Auth Check (Supabase JWT)
-        const authHeader = req.headers.get('authorization');
-        if (!authHeader) {
-            return NextResponse.json({ error: "Missing Authorization Header" }, { status: 401 });
-        }
+        const ip = getIp(req);
+        const ipHash = crypto.createHash("sha256").update(ip).digest("hex");
 
-        const token = authHeader.replace('Bearer ', '');
-        const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(token);
-
-        if (authError || !user) {
-            return NextResponse.json({ error: "Unauthorized: Invalid Token" }, { status: 401 });
-        }
-
-        // 2. Submission Limit Check (User ID)
-        if (await hasUserSubmitted(user.id)) {
+        // 1. IP Limit Check
+        if (await hasIpSubmitted(ipHash)) {
             return NextResponse.json(
                 { error: "Access Denied: You have already submitted a puzzle." },
                 { status: 403 }
@@ -29,7 +30,7 @@ export async function POST(req: NextRequest) {
         const formData = await req.formData();
         const file = formData.get("file") as File;
 
-        // 3. Duplicate File Name Check
+        // 2. Duplicate File Check
         if (file && await hasFileSubmitted(file.name)) {
             return NextResponse.json(
                 { error: "A file with this name has already been submitted." },
@@ -49,7 +50,6 @@ export async function POST(req: NextRequest) {
         const safeName = file.name.replace(/[^a-zA-Z0-9.-]/g, "_");
         const filename = `${uuidv4()}-${safeName}`;
 
-        // Upload to Supabase Storage
         const { data: uploadData, error: uploadError } = await supabaseAdmin
             .storage
             .from('pdfs')
@@ -63,15 +63,12 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: "File Upload Failed" }, { status: 500 });
         }
 
-        // Get public URL
         const { data: { publicUrl } } = supabaseAdmin.storage.from('pdfs').getPublicUrl(filename);
 
-        // Save to DB
         const submission = {
             file_path: publicUrl,
             original_name: file.name,
-            hash: null, // Legacy field
-            user_id: user.id
+            hash: ipHash,
         };
 
         const savedData = await addSubmission(submission);
@@ -80,6 +77,7 @@ export async function POST(req: NextRequest) {
             success: true,
             id: savedData.id,
             file_path: savedData.file_path,
+            hash: ipHash
         });
 
     } catch (error) {
