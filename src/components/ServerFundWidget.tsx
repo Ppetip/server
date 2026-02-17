@@ -4,9 +4,9 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 
 interface ServerFundWidgetProps {
-    current: number;
-    goal: number;
-    link: string;
+    current?: number;
+    goal?: number;
+    link?: string;
 }
 
 export default function ServerFundWidget({ current = 0, goal = 20000, link = "https://ko-fi.com/sudokuserver" }: ServerFundWidgetProps) {

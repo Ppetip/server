@@ -8,6 +8,11 @@ import ServerFundWidget from "@/components/ServerFundWidget";
 export default function ReceiptPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = use(params);
     const [globalCount, setGlobalCount] = useState(0);
+    const [donationStats, setDonationStats] = useState({
+        current: 0,
+        goal: 20000,
+        link: "https://ko-fi.com/sudokuserver"
+    });
     const [copied, setCopied] = useState(false);
 
     useEffect(() => {
@@ -41,6 +46,13 @@ export default function ReceiptPage({ params }: { params: Promise<{ id: string }
                 const res = await fetch("/api/stats");
                 const data = await res.json();
                 if (data.count) setGlobalCount(data.count);
+                if (data.donationCurrent !== undefined) {
+                    setDonationStats({
+                        current: data.donationCurrent || 0,
+                        goal: data.donationGoal || 20000,
+                        link: data.donationLink || "https://ko-fi.com/sudokuserver"
+                    });
+                }
             } catch (e) {
                 console.error("Failed to fetch stats");
             }
@@ -181,7 +193,11 @@ export default function ReceiptPage({ params }: { params: Promise<{ id: string }
                     </div>
 
                     {/* Donation Widget */}
-                    <ServerFundWidget />
+                    <ServerFundWidget
+                        current={donationStats.current}
+                        goal={donationStats.goal}
+                        link={donationStats.link}
+                    />
                 </div>
 
             </div>
